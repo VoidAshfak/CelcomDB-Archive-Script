@@ -55,7 +55,7 @@ export_table() {
     log "INFO" "==== Exporting $table_name ===="
 
     # 1. Export from remote
-    retry_command "bcp \"$export_query\" queryout \"$bcp_remote\" -c -b 100000 -a 20480 -S \"$REMOTE_SERVER;TrustServerCertificate=yes\" -U \"$USER\" -P \"$SOURCE_PASS\"" \
+    retry_command "bcp \"$export_query\" queryout \"$bcp_remote\" -c -b 100000 -S \"$REMOTE_SERVER;TrustServerCertificate=yes\" -U \"$USER\" -P \"$SOURCE_PASS\"" \
         || { log "ERROR" "$table_name export failed"; return 1; }
 
     # 2. Compress
@@ -89,7 +89,7 @@ import_table() {
 
     # 5. Import to local DB
     retry_command "ssh -p 9876 118.67.218.249 \
-    \"/opt/mssql-tools18/bin/bcp 'CelcomDB_Archive_Shadhin_2025.dbo.${table_name}_Temp' in '$bcp_local' -c -S '$LOCAL_SERVER;TrustServerCertificate=yes' -U '$USER' -P '$DESTINATION_PASS'\"" \
+    \"/opt/mssql-tools18/bin/bcp 'CelcomDB_Archive_Shadhin_2025.dbo.${table_name}_Temp' in '$bcp_local' -c -b 100000 -S '$LOCAL_SERVER;TrustServerCertificate=yes' -U '$USER' -P '$DESTINATION_PASS'\"" \
     || { log 'ERROR' "$table_name import failed"; return 1; }
 
     # 6. Cleanup remote compressed/uncompressed files
@@ -103,13 +103,13 @@ import_table() {
 # ======================================
 # EXPORT QUERIES 
 # ======================================
-Ads_DATA_EXPORT_QUERY="SELECT top 100 Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB_Archive.dbo.Ads_Partitioned WITH (NOLOCK) WHERE CAST(Date AS date) = CAST(GETDATE() - 1 AS DATE)"
-DOBMessageHistory_DATA_EXPORT_QUERY="SELECT top 100 Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB_Archive.dbo.DOBMessageHistory WITH (NOLOCK) WHERE CAST(CreatedDate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
-DOBOTPRequest_DATA_EXPORT_QUERY="SELECT top 100 Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse FROM CelcomDB_Archive.dbo.DOBOTPRequest WITH (NOLOCK) WHERE CAST(CreatedDate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
-DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT top 100 Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB_Archive.dbo.DOBRenewalChargeProcess WITH (NOLOCK) WHERE CAST(LastUpdate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
-DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT top 100 Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB_Archive.dbo.DOBRenewalChargeProcessResponse WITH (NOLOCK) WHERE CAST(CreatedDate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
-RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT top 100 Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB_Archive.dbo.tbl_RobiDCBRenewalCharge_Partitioned WITH (NOLOCK) WHERE CAST(RequestDate AS DATE) = CAST(GETDATE()-1 AS DATE)"
-RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT top 100 TransID, MSISDN, Service_ID, Service_Name, RequestAmount, Status, ProcessTime, LastChargeStatus, LastUpdate, PartitionKey, PayerMsisdn FROM CelcomDB_Archive.dbo.tbl_RobiDCBRenewalChargeProcess_Partitioned WITH (NOLOCK) WHERE CAST(LastUpdate AS DATE) = CAST(GETDATE()-1 AS DATE)"
+Ads_DATA_EXPORT_QUERY="SELECT Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB_Archive.dbo.Ads_Partitioned WITH (NOLOCK) WHERE CAST(Date AS date) = CAST(GETDATE() - 1 AS DATE)"
+DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB_Archive.dbo.DOBMessageHistory WITH (NOLOCK) WHERE CAST(CreatedDate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
+DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse FROM CelcomDB_Archive.dbo.DOBOTPRequest WITH (NOLOCK) WHERE CAST(CreatedDate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
+DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB_Archive.dbo.DOBRenewalChargeProcess WITH (NOLOCK) WHERE CAST(LastUpdate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
+DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB_Archive.dbo.DOBRenewalChargeProcessResponse WITH (NOLOCK) WHERE CAST(CreatedDate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
+RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB_Archive.dbo.tbl_RobiDCBRenewalCharge_Partitioned WITH (NOLOCK) WHERE CAST(RequestDate AS DATE) = CAST(GETDATE()-1 AS DATE)"
+RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT TransID, MSISDN, Service_ID, Service_Name, RequestAmount, Status, ProcessTime, LastChargeStatus, LastUpdate, PartitionKey, PayerMsisdn FROM CelcomDB_Archive.dbo.tbl_RobiDCBRenewalChargeProcess_Partitioned WITH (NOLOCK) WHERE CAST(LastUpdate AS DATE) = CAST(GETDATE()-1 AS DATE)"
 
 
 # ======================================
