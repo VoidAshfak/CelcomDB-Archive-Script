@@ -66,17 +66,8 @@ export_process_table() {
     retry_command "scp -P 9876 \"$bcp_remote.gz\" \"$LOCAL_PATH\"" \
         || { log "ERROR" "$table_name transfer failed"; return 1; }
 
-    # 4. Unzip on local (remote execution)
-    # retry_command "ssh -p 9876 118.67.218.249 \"gunzip -f $bcp_local.gz && chmod 777 $bcp_local && chown mssql:mssql $bcp_local\"" \
-    # || { log "ERROR" "$table_name unzip failed"; return 1; }
-
-    # 5. Import to local DB
-    # retry_command "ssh -p 9876 118.67.218.249 \
-    # \"/opt/mssql-tools18/bin/bcp 'CelcomDB_Archive_Cloud7_2025.dbo.${table_name}_Temp' in '$bcp_local' -c -b 100000 -S '$LOCAL_SERVER;TrustServerCertificate=yes' -U '$USER' -P '$DESTINATION_PASS'\"" \
-    # || { log "ERROR" "$table_name import failed"; return 1; }
-
-    # 6. Cleanup remote compressed/uncompressed files
-    rm -f "$bcp_remote" "$bcp_remote.gz"
+    # 4. Cleanup remote compressed/uncompressed files
+    rm -f "$bcp_remote" "$bcp_remote.gz" 
 
     log "INFO" "$table_name processed successfully."
 }
@@ -87,12 +78,12 @@ export_process_table() {
 # EXPORT QUERIES 
 # ======================================
 # Ads_DATA_EXPORT_QUERY="SELECT Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB_Archive.dbo.Ads_Partitioned WHERE CAST(Date AS date) between '2025-05-31' and '2025-07-31'"
-# DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB_Archive.dbo.DOBMessageHistory WHERE CAST(CreatedDate as date) between '2025-05-31' and '2025-07-31'"
+DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB.dbo.DOBMessageHistory_Archive"
 # DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse FROM CelcomDB_Archive.dbo.DOBOTPRequest WHERE CAST(CreatedDate AS DATE) = CAST(GETDATE() - 1 AS DATE)"
-# DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB_Archive.dbo.DOBRenewalChargeProcess WHERE CAST(ProcessTime as date) BETWEEN '2025-03-24' and '2025-07-31'"
-DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB_Archive.dbo.DOBRenewalChargeProcessResponse WHERE CreatedDate < '2025-03-08'"
-# RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB_Archive.dbo.tbl_RobiDCBRenewalCharge_Partitioned WHERE CAST(RequestDate AS DATE) = CAST(GETDATE()-1 AS DATE)"
-# RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT TransID, MSISDN, Service_ID, Service_Name, RequestAmount, Status, ProcessTime, LastChargeStatus, LastUpdate, PartitionKey, PayerMsisdn FROM CelcomDB_Archive.dbo.tbl_RobiDCBRenewalChargeProcess_Partitioned WHERE CAST(LastUpdate AS DATE) = CAST(GETDATE()-1 AS DATE)"
+DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB.dbo.DOBRenewalChargeProcess_Archive"
+DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB.dbo.DOBRenewalChargeProcessResponse_Archive"
+RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB.dbo.tbl_RobiDCBRenewalCharge_Archive"
+RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT TransID, MSISDN, Service_ID, Service_Name, RequestAmount, Status, ProcessTime, LastChargeStatus, LastUpdate, PartitionKey, PayerMsisdn FROM CelcomDB.dbo.tbl_RobiDCBRenewalChargeProcess_Archive"
 
 
 # ======================================
@@ -100,12 +91,12 @@ DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisd
 # ======================================
 declare -A TABLES=(
     # ["Ads"]="$Ads_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/ads_archive_rows.bcp|/storagedata/mssql/data/dbbackup/ads_archive_rows.bcp"
-    # ["DOBMessageHistory"]="$DOBMessageHistory_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp"
+    ["DOBMessageHistory"]="$DOBMessageHistory_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp"
     # ["DOBOTPRequest"]="$DOBOTPRequest_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp"
-    # ["DOBRenewalChargeProcess"]="$DOBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp"
+    ["DOBRenewalChargeProcess"]="$DOBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp"
     ["DOBRenewalChargeProcessResponse"]="$DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp"
-    # ["tbl_RobiDCBRenewalCharge"]="$RobiDCBRenewalCharge_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/RobiDCBRenewalCharge_archive_rows.bcp|/storagedata/mssql/data/dbbackup/RobiDCBRenewalCharge_archive_rows.bcp"
-    # ["tbl_RobiDCBRenewalChargeProcess"]="$RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/RobiDCBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/RobiDCBRenewalChargeProcess_archive_rows.bcp"
+    ["tbl_RobiDCBRenewalCharge"]="$RobiDCBRenewalCharge_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/RobiDCBRenewalCharge_archive_rows.bcp|/storagedata/mssql/data/dbbackup/tbl_RobiDCBRenewalCharge_archive_rows.bcp"
+    ["tbl_RobiDCBRenewalChargeProcess"]="$RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/RobiDCBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp"
 )
 
 
@@ -114,7 +105,7 @@ declare -A TABLES=(
 # ======================================
 log "INFO" "Starting BCP transfer process..."
 export_failures=()
-import_failures=()
+
 
 for tbl in "${!TABLES[@]}"; do
     IFS="|" read -r query remote_path local_path <<< "${TABLES[$tbl]}"
@@ -132,13 +123,15 @@ fi
 
 
 ssh -p 9876 118.67.218.249 "/storagedata/mssql/data/dbbackup/local_import.sh \
-/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp"
+/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp \
+/storagedata/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp \
+/storagedata/mssql/data/dbbackup/RobiDCBRenewalCharge_archive_rows.bcp \
+/storagedata/mssql/data/dbbackup/RobiDCBRenewalChargeProcess_archive_rows.bcp \
+/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp"
 
-#  \
-# /storagedata/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp"
 
 
-
+# import_failures=()
 # for tbl in "${!TABLES[@]}"; do
 #     IFS="|" read -r query remote_path local_path <<< "${TABLES[$tbl]}"
 #     if ! import_process_table "$tbl" "$query" "$remote_path" "$local_path"; then

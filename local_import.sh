@@ -45,3 +45,12 @@ for FILE in "$@"; do
         log "ERROR: Import failed for $TABLENAME ($FILE)"
     fi
 done
+
+
+
+
+
+
+
+
+
