@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-LOG_FILE="/storagedata/mssql/data/dbbackup/local_import.log"
+LOG_FILE="/storagedata/mssql/data/dbbackup/celcom_cloud7_local_import.log"
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [LOCAL] $1" | tee -a "$LOG_FILE"
@@ -33,8 +33,8 @@ for FILE in "$@"; do
     TABLENAME=${BASENAME%_archive_rows.bcp}
 
     # 4. Import
-    log "Importing into CelcomDB_Archive_Shadhin_2025.dbo.${TABLENAME}_Temp2"
-    /opt/mssql-tools18/bin/bcp "CelcomDB_Archive_Shadhin_2025.dbo.${TABLENAME}_Temp2" in "$FILE" \
+    log "Importing into CelcomDB_Archive_Cloud7_2025.dbo.${TABLENAME}_Temp2"
+    /opt/mssql-tools18/bin/bcp "CelcomDB_Archive_Cloud7_2025.dbo.${TABLENAME}_Temp2" in "$FILE" \
         -c -b 100000 -q \
         -S "118.67.218.249,7359;TrustServerCertificate=yes" \
         -U "Asif" -P "aim8ang8S@MR@T"

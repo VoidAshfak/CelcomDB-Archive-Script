@@ -6,13 +6,13 @@ set -o pipefail
 # ======================================
 # CONFIGURATION
 # ======================================
-REMOTE_SERVER="152.42.239.171,7953"
+REMOTE_SERVER="159.223.40.204,1433"
 LOCAL_SERVER="118.67.218.249,7359"
 USER="Asif"
-SOURCE_PASS="Tx8v#Lp29z!qa"
+SOURCE_PASS="Uef5ahghoo9aip7"
 DESTINATION_PASS="aim8ang8S@MR@T"
 LOCAL_PATH="root@118.67.218.249:/storagedata/mssql/data/dbbackup"
-LOG_FILE="/mnt/volume_sgp1_04/mssql/data/dbbackup/bcp_transfer.log"
+LOG_FILE="/mnt/robi_volume_dbbackup/mssql/data/dbbackup/bcp_transfer.log"
 RETRIES=3
 SLEEP_BETWEEN_RETRIES=5
 
@@ -79,7 +79,7 @@ export_process_table() {
 # ======================================
 Ads_DATA_EXPORT_QUERY="SELECT Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB.dbo.Ads_Archive"
 DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB.dbo.DOBMessageHistory_Archive"
-DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse, VerifyAt FROM CelcomDB.dbo.DOBOTPRequest_Archive"
+DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse, PayerMsisdn, VerifyAt FROM CelcomDB.dbo.DOBOTPRequest_Archive"
 DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB.dbo.DOBRenewalChargeProcess_Archive"
 DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB.dbo.DOBRenewalChargeProcessResponse_Archive"
 RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB.dbo.tbl_RobiDCBRenewalCharge_Archive"
@@ -90,13 +90,13 @@ RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT TransID, MSISDN, Service_I
 # TABLE LIST
 # ======================================
 declare -A TABLES=(
-    ["Ads"]="$Ads_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/Ads_archive_rows.bcp|/storagedata/mssql/data/dbbackup/Ads_archive_rows.bcp"
-    ["DOBMessageHistory"]="$DOBMessageHistory_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp"
-    ["DOBOTPRequest"]="$DOBOTPRequest_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp"
-    ["DOBRenewalChargeProcess"]="$DOBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp"
-    ["DOBRenewalChargeProcessResponse"]="$DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp"
-    ["tbl_RobiDCBRenewalCharge"]="$RobiDCBRenewalCharge_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/tbl_RobiDCBRenewalCharge_archive_rows.bcp|/storagedata/mssql/data/dbbackup/tbl_RobiDCBRenewalCharge_archive_rows.bcp"
-    ["tbl_RobiDCBRenewalChargeProcess"]="$RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/volume_sgp1_04/mssql/data/dbbackup/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp"
+    ["Ads"]="$Ads_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/Ads_archive_rows.bcp|/storagedata/mssql/data/dbbackup/Ads_archive_rows.bcp"
+    ["DOBMessageHistory"]="$DOBMessageHistory_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp"
+    ["DOBOTPRequest"]="$DOBOTPRequest_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp"
+    ["DOBRenewalChargeProcess"]="$DOBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp"
+    ["DOBRenewalChargeProcessResponse"]="$DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp|/storagedata/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp"
+    ["tbl_RobiDCBRenewalCharge"]="$RobiDCBRenewalCharge_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/tbl_RobiDCBRenewalCharge_archive_rows.bcp|/storagedata/mssql/data/dbbackup/tbl_RobiDCBRenewalCharge_archive_rows.bcp"
+    ["tbl_RobiDCBRenewalChargeProcess"]="$RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp"
 )
 
 
@@ -122,7 +122,7 @@ else
 fi
 
 
-ssh -p 9876 118.67.218.249 "/storagedata/mssql/data/dbbackup/local_import.sh \
+ssh -p 9876 118.67.218.249 "/storagedata/mssql/data/dbbackup/celcom_cloud7_local_import.sh \
 /storagedata/mssql/data/dbbackup/Ads_archive_rows.bcp \
 /storagedata/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp \
 /storagedata/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp \
