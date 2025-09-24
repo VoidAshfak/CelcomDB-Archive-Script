@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-LOG_FILE="/storagedata/mssql/data/dbbackup2/celcom_cloud7_local_import.log"
+LOG_FILE="/storagedata/mssql/data/dbbackup2/celcom_cloud7_local_import_prev_data.log"
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') [LOCAL] $1" | tee -a "$LOG_FILE"
@@ -47,12 +47,4 @@ for FILE in "$@"; do
 
     rm -f "$FILE" "$FILE.gz" 
 done
-
-
-
-
-
-
-
-
 

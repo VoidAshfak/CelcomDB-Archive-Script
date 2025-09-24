@@ -12,7 +12,7 @@ USER="Asif"
 SOURCE_PASS="Uef5ahghoo9aip7"
 DESTINATION_PASS="aim8ang8S@MR@T"
 LOCAL_PATH="root@118.67.218.249:/storagedata/mssql/data/dbbackup2"
-LOG_FILE="/mnt/robi_volume_dbbackup/mssql/data/dbbackup/bcp_transfer.log"
+LOG_FILE="/mnt/robi_volume_dbbackup/mssql/data/dbbackup/bcp_prev_data_transfer.log"
 RETRIES=3
 SLEEP_BETWEEN_RETRIES=5
 
@@ -79,11 +79,11 @@ export_process_table() {
 # ======================================
 
 # where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))
-Ads_DATA_EXPORT_QUERY="SELECT Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB.dbo.Ads_Archive where Date >= cast(getdate() - 1 as date) AND Date <  dateadd(day, 1, cast(getdate() - 1 as date)) "
-DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB.dbo.DOBMessageHistory_Archive where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
-DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse, PayerMsisdn, VerifyAt FROM CelcomDB.dbo.DOBOTPRequest_Archive where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
-DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB.dbo.DOBRenewalChargeProcess_Archive "
-DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB.dbo.DOBRenewalChargeProcessResponse_Archive where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
+# Ads_DATA_EXPORT_QUERY="SELECT Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB_Archive.dbo.Ads_Partitioned where Date >= '2025-08-01'"
+DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB_Archive.dbo.DOBMessageHistory where  CreatedDate >= '2025-08-01'"
+# DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse, PayerMsisdn, VerifyAt FROM CelcomDB_Archive.dbo.DOBOTPRequest where CreatedDate >= '2025-05-31'"
+# DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB.dbo.DOBRenewalChargeProcess_Archive "
+# DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB.dbo.DOBRenewalChargeProcessResponse_Archive where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
 RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB.dbo.tbl_RobiDCBRenewalCharge_Archive where RequestDate >= cast(getdate() - 1 as date) AND RequestDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
 RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT TransID, MSISDN, Service_ID, Service_Name, RequestAmount, Status, ProcessTime, LastChargeStatus, LastUpdate, PayerMsisdn FROM CelcomDB.dbo.tbl_RobiDCBRenewalChargeProcess_Archive where LastUpdate >= cast(getdate() - 1 as date) AND LastUpdate <  dateadd(day, 1, cast(getdate() - 1 as date))"
 
@@ -95,10 +95,10 @@ declare -A TABLES=(
     ["Ads"]="$Ads_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/Ads_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/Ads_archive_rows.bcp"
     ["DOBMessageHistory"]="$DOBMessageHistory_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBMessageHistory_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/DOBMessageHistory_archive_rows.bcp"
     ["DOBOTPRequest"]="$DOBOTPRequest_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBOTPRequest_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/DOBOTPRequest_archive_rows.bcp"
-    ["DOBRenewalChargeProcess"]="$DOBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcess_archive_rows.bcp"
-    ["DOBRenewalChargeProcessResponse"]="$DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcessResponse_archive_rows.bcp"
-    ["tbl_RobiDCBRenewalCharge"]="$RobiDCBRenewalCharge_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/tbl_RobiDCBRenewalCharge_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalCharge_archive_rows.bcp"
-    ["tbl_RobiDCBRenewalChargeProcess"]="$RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp"
+    # ["DOBRenewalChargeProcess"]="$DOBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcess_archive_rows.bcp"
+    # ["DOBRenewalChargeProcessResponse"]="$DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/DOBRenewalChargeProcessResponse_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcessResponse_archive_rows.bcp"
+    # ["tbl_RobiDCBRenewalCharge"]="$RobiDCBRenewalCharge_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/tbl_RobiDCBRenewalCharge_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalCharge_archive_rows.bcp"
+    # ["tbl_RobiDCBRenewalChargeProcess"]="$RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY|/mnt/robi_volume_dbbackup/mssql/data/dbbackup/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp|/storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp"
 )
 
 
@@ -124,13 +124,16 @@ else
 fi
 
 
-ssh -p 9876 118.67.218.249 "/storagedata/mssql/data/dbbackup2/celcom_cloud7_local_import.sh \
+ssh -p 9876 118.67.218.249 "/storagedata/mssql/data/dbbackup2/celcom_c7_prev_data_sync_import.sh \
 /storagedata/mssql/data/dbbackup2/Ads_archive_rows.bcp \
 /storagedata/mssql/data/dbbackup2/DOBOTPRequest_archive_rows.bcp \
-/storagedata/mssql/data/dbbackup2/DOBMessageHistory_archive_rows.bcp \
-/storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcess_archive_rows.bcp \
-/storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalCharge_archive_rows.bcp \
-/storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp \
-/storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcessResponse_archive_rows.bcp"
+/storagedata/mssql/data/dbbackup2/DOBMessageHistory_archive_rows.bcp"
+#  \
+
+
+# /storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcess_archive_rows.bcp \
+# /storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalCharge_archive_rows.bcp \
+# /storagedata/mssql/data/dbbackup2/tbl_RobiDCBRenewalChargeProcess_archive_rows.bcp \
+# /storagedata/mssql/data/dbbackup2/DOBRenewalChargeProcessResponse_archive_rows.bcp"
 
 

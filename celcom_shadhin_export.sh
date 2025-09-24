@@ -77,13 +77,14 @@ export_process_table() {
 # ======================================
 # EXPORT QUERIES 
 # ======================================
-Ads_DATA_EXPORT_QUERY="SELECT Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB.dbo.Ads_Archive"
-DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB.dbo.DOBMessageHistory_Archive"
-DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse, VerifyAt FROM CelcomDB.dbo.DOBOTPRequest_Archive"
+# where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))
+Ads_DATA_EXPORT_QUERY="SELECT Id, VendorName, ClickId, Msisdn, ServiceId, IpAddress, NotifiedStatus, DeviceName, Date, NotifiedRetry, PaymentStatus, Updated FROM CelcomDB.dbo.Ads_Archive where Date >= cast(getdate() - 1 as date) AND Date <  dateadd(day, 1, cast(getdate() - 1 as date))"
+DOBMessageHistory_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, AccessToken FROM CelcomDB.dbo.DOBMessageHistory_Archive where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
+DOBOTPRequest_DATA_EXPORT_QUERY="SELECT Id, Msisdn, ServiceId, OTP, SmsDeliveryStatus, SmsDeliveryResponse, SendOTPRequest, SendOTPResponse, CreatedDate, ExpireAt, IsVerified, OtpVerifyResponse, VerifyAt FROM CelcomDB.dbo.DOBOTPRequest_Archive where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
 DOBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT Id, MSISDN, ServiceId, ServiceName, RequestAmount, Status, ProcessTime, LastChargeStatus, LastChargeCode, LastChargeDate, LastUpdate, PayerMsisdn, IsLowBalance, RetryUntil, IsFromLowBalance, OnBehalfOf, Duration, SubscriptionType, Merchant, TotalPaymentCount, RetryCountOnFailedCharge FROM CelcomDB.dbo.DOBRenewalChargeProcess_Archive"
-DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB.dbo.DOBRenewalChargeProcessResponse_Archive"
-RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB.dbo.tbl_RobiDCBRenewalCharge_Archive"
-RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT TransID, MSISDN, Service_ID, Service_Name, RequestAmount, Status, ProcessTime, LastChargeStatus, LastUpdate, PayerMsisdn FROM CelcomDB.dbo.tbl_RobiDCBRenewalChargeProcess_Archive"
+DOBRenewalChargeProcessResponse_DATA_EXPORT_QUERY="SELECT Id, MSISDN, PayerMsisdn, ServiceId, ChargeStatus, ChargeCode, CreatedDate, Request, Response, IsLowBalance FROM CelcomDB.dbo.DOBRenewalChargeProcessResponse_Archive where CreatedDate >= cast(getdate() - 1 as date) AND CreatedDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
+RobiDCBRenewalCharge_DATA_EXPORT_QUERY="SELECT Trans_ID, MSISDN, Service_ID, RequestAmount, ChargedAmount, ErrorCode, ErrorMessage, RequestDate, ResponseTime, RequestBody, ResponseBody, PartitionKey FROM CelcomDB.dbo.tbl_RobiDCBRenewalCharge_Archive where RequestDate >= cast(getdate() - 1 as date) AND RequestDate <  dateadd(day, 1, cast(getdate() - 1 as date))"
+RobiDCBRenewalChargeProcess_DATA_EXPORT_QUERY="SELECT TransID, MSISDN, Service_ID, Service_Name, RequestAmount, Status, ProcessTime, LastChargeStatus, LastUpdate, PayerMsisdn FROM CelcomDB.dbo.tbl_RobiDCBRenewalChargeProcess_Archive where LastUpdate >= cast(getdate() - 1 as date) AND LastUpdate <  dateadd(day, 1, cast(getdate() - 1 as date))"
 
 
 # ======================================
